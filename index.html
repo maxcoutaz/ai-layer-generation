@@ -30,6 +30,12 @@
       margin-top: 20px;
     }
 
+    #generated-image {
+      max-width: 50%; /* Adjust the size displayed on the webpage */
+      height: auto;
+      margin: 0 auto;
+    }
+
     .loading-bar-container {
       width: 80%;
       height: 10px;
@@ -42,24 +48,44 @@
     .loading-bar {
       width: 0;
       height: 100%;
-      background-color: #ffffff;
-      transition: width 0.5s ease-in-out;
+      background-color: #0f0;
+      animation: loading 3s linear infinite; /* Smooth animation */
     }
 
+    @keyframes loading {
+  0% {
+    left: -100%;
+    width: 100%;
+  }
+  50% {
+    left: 0;
+    width: 100%;
+  }
+  100% {
+    left: 100%;
+    width: 100%;
+  }
+}
+
     a {
-      color: #ffffff;
+      background-color: #ffffff;
+      color: #203d65;
+      padding: 10px 20px;
+      border-radius: 25px;
       text-decoration: none;
       font-size: 1.2em;
+      display: inline-block;
+      margin-top: 20px;
     }
 
     a:hover {
-      text-decoration: underline;
+      background-color: #e6e6e6;
     }
   </style>
 </head>
 <body>
   <h1>Generating Your Image</h1>
-  <div class="loading">Please wait...</div>
+  <div class="loading">Your image is on the way! Hang tight 🚀</div>
   <div class="loading-bar-container">
     <div class="loading-bar" id="loading-bar"></div>
   </div>
@@ -94,6 +120,9 @@
           // Stop the loading bar
           clearInterval(interval);
           loadingBar.style.width = '100%';
+
+          // Update text to display when the image is ready
+          document.querySelector(".loading").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
 
           // Hide loading and show image
           document.querySelector(".loading").style.display = "none";
