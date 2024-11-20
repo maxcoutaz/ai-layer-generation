@@ -1,10 +1,1 @@
-{
-  "red123": {
-    "status": "ready",
-    "image_url": "https://drive.google.com/uc?id=FILE_ID1&export=download"
-  },
-  "blue456": {
-    "status": "ready",
-    "image_url": "https://drive.google.com/uc?id=FILE_ID2&export=download"
-  }
-}
+{"export_undefined":{"status":"ready"}}
