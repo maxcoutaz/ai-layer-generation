@@ -5,16 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Image</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 20%; }
-    .loading { font-size: 20px; }
-    #image-container { display: none; }
+    body {
+      font-family: 'Oswald', sans-serif;
+      background-color: #203d65;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 10%;
+      font-size: 2.5em;
+    }
+
+    .loading {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+
+    #image-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .loading-bar-container {
+      width: 80%;
+      height: 10px;
+      background-color: #333;
+      margin: 20px auto;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .loading-bar {
+      width: 0;
+      height: 100%;
+      background-color: #0f0;
+      transition: width 0.5s ease-in-out;
+    }
+
+    a {
+      color: #0f0;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <h1>Generating Your Image</h1>
   <div class="loading">Please wait...</div>
+  <div class="loading-bar-container">
+    <div class="loading-bar" id="loading-bar"></div>
+  </div>
   <div id="image-container">
-    <img id="generated-image" style="max-width: 100%; height: auto;" />
+    <img id="generated-image" style="max-width: 80%; height: auto;" />
     <br />
     <a id="download-link" href="#" download="generated_image.png">Download Image</a>
   </div>
@@ -23,12 +72,29 @@
     // Extract token from URL
     const token = location.pathname.split('/').pop();
 
-    // Fetch the JSON data from the repository
-    fetch("data.json")
+    // Simulate loading bar progress
+    let progress = 0;
+    const loadingBar = document.getElementById('loading-bar');
+    const interval = setInterval(() => {
+      if (progress < 100) {
+        progress += 10;
+        loadingBar.style.width = progress + '%';
+      } else {
+        clearInterval(interval);
+      }
+    }, 500);
+
+    // Fetch the JSON data from the correct repository
+    fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
       .then(response => response.json())
       .then(data => {
-        const record = data[token];
+        const record = data[`export_${token}`]; // Adjusting to the key structure in data.json
         if (record && record.status === "ready") {
+          // Stop the loading bar
+          clearInterval(interval);
+          loadingBar.style.width = '100%';
+
+          // Hide loading and show image
           document.querySelector(".loading").style.display = "none";
           const imageContainer = document.getElementById("image-container");
           const image = document.getElementById("generated-image");
@@ -40,11 +106,15 @@
           imageContainer.style.display = "block";
         } else {
           document.querySelector(".loading").textContent = "Image not ready or token invalid.";
+          clearInterval(interval);
+          loadingBar.style.width = '0';
         }
       })
       .catch(error => {
         console.error("Error fetching data:", error);
         document.querySelector(".loading").textContent = "An error occurred. Please try again later.";
+        clearInterval(interval);
+        loadingBar.style.width = '0';
       });
   </script>
 </body>
