@@ -177,16 +177,18 @@
 
             if (image) image.src = record.image_url; // Set the image source
 
+            const downloadLink = document.getElementById("download-link");
+
             if (downloadLink) {
-              downloadLink.href = record.image_url; // Set the URL for the image
               const filename = `generated_image_${token}.png`; // Create a dynamic filename
-              downloadLink.setAttribute("download", filename); // Ensure the download attribute is set
               downloadLink.addEventListener("click", (event) => {
-                event.preventDefault(); // Prevent default behavior
-                const anchor = document.createElement("a");
-                anchor.href = record.image_url;
-                anchor.download = filename;
-                anchor.click(); // Programmatically click the anchor to trigger download
+                event.preventDefault(); // Prevent default link behavior
+                const anchor = document.createElement("a"); // Create a temporary anchor element
+                anchor.href = record.image_url; // Set the image URL as the anchor href
+                anchor.download = filename; // Set the download attribute with the filename
+                document.body.appendChild(anchor); // Append the anchor to the DOM
+                anchor.click(); // Programmatically trigger a click event
+                document.body.removeChild(anchor); // Remove the anchor from the DOM
               });
             }
 
