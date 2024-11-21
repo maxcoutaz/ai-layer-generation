@@ -52,8 +52,8 @@
 
     .loading-bar-container {
       width: 80%;
-      height: 20px;
-      margin: 25px auto;
+      height: 10px;
+      margin: 20px auto;
       border-radius: 5px;
       overflow: hidden;
       position: relative;
@@ -62,6 +62,7 @@
     .loading-bar {
       width: 0;
       height: 100%;
+      background-color: #0edda5;
       transition: width 10s linear; /* Slow animation over 10 seconds */
     }
 
@@ -105,7 +106,7 @@
   <div id="image-container">
     <img id="generated-image" />
     <br />
-    <a id="download-link" href="#" target="_blank">Download Image</a>
+    <a id="download-link" href="#" target="_blank">View Full Image</a>
   </div>
 
   <script>
@@ -113,10 +114,11 @@
       // Extract token from URL
       const token = location.pathname.split('/').pop();
 
-      if (!token || token === "/") {
-        // If no token is provided, display a default landing message
+      // Check if token is present in the URL
+      if (!token || token === "") {
         document.querySelector("h1").textContent = "Welcome! Submit a form to generate your image.";
         document.querySelector(".loading").style.display = "none";
+        document.getElementById("loading-bar-container").style.display = "none";
         return;
       }
 
@@ -147,11 +149,6 @@
         .then(data => {
           const record = data[`export_${token}`];
           if (record && record.status === "ready") {
-            // Redirect to unique token URL
-            const currentUrl = window.location.origin; // Get base URL
-            const tokenUrl = `${currentUrl}/${token}`; // Construct token-specific URL
-            window.location.href = tokenUrl; // Redirect
-
             // Stop the loading bar
             clearInterval(interval);
             loadingBar.style.width = '100%';
