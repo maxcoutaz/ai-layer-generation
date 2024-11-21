@@ -109,11 +109,17 @@
   const loadingBar = document.getElementById('loading-bar');
   const rocket = document.getElementById('rocket');
 
-  // Start loading bar animation
-  loadingBar.style.width = '100%'; // Let the bar animation fill up to 100%
-  setTimeout(() => {
-    rocket.style.left = '100%'; // Move rocket to the end of the bar
-  }, 0); // No delay to start rocket movement
+  // Simulate loading bar progress (interval logic)
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 100) {
+      progress += 1; // Increment progress
+      loadingBar.style.width = `${progress}%`;
+      rocket.style.left = `${progress}%`; // Move the rocket with the bar
+    } else {
+      clearInterval(interval); // Stop the interval when progress is 100%
+    }
+  }, 100); // Update every 100ms for smooth animation
 
   // Fetch the JSON data from the repository
   fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
@@ -179,6 +185,8 @@
       console.error("Error fetching data:", error);
       const loadingText = document.querySelector(".loading");
       if (loadingText) loadingText.textContent = "An error occurred. Please try again later.";
+      clearInterval(interval);
+      loadingBar.style.width = '0';
     });
 });
   </script>
