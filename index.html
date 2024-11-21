@@ -53,7 +53,6 @@
     .loading-bar-container {
       width: 80%;
       height: 10px;
-      background-color:;
       margin: 20px auto;
       border-radius: 5px;
       overflow: hidden;
@@ -63,7 +62,7 @@
     .loading-bar {
       width: 0;
       height: 100%;
-      background-color:;
+      background-color: #0edda5;
       transition: width 10s linear; /* Slow animation over 10 seconds */
     }
 
@@ -107,7 +106,7 @@
   <div id="image-container">
     <img id="generated-image" />
     <br />
-    <a id="download-link" href="#" download="generated_image.png">Download Image</a>
+    <a id="download-link" href="#" target="_blank">Download Image</a>
   </div>
 
   <script>
@@ -164,7 +163,7 @@
 
             // Update the heading text
             const heading = document.querySelector("h1");
-            if (heading) heading.textContent = "Voilà! Your masterpiece is ready to shine 🎉";
+            if (heading) heading.textContent = "Voilà! Your masterpiece is ready 🎉";
 
             // Hide the loading text
             const loadingText = document.querySelector(".loading");
@@ -178,14 +177,8 @@
             if (image) image.src = record.image_url; // Set the image source
 
             if (downloadLink) {
-              const filename = `generated_image_${token}.png`; // Create a dynamic filename
-              downloadLink.addEventListener("click", (event) => {
-                event.preventDefault(); // Prevent default link behavior
-                // Create a direct link for manual saving
-                downloadLink.href = record.image_url;
-                downloadLink.target = "_blank"; // Open the image in a new tab
-                downloadLink.download = filename; // Suggested filename
-              });
+              downloadLink.href = record.image_url; // Directly link to the full-sized image
+              downloadLink.target = "_blank"; // Open in a new tab
             }
 
             if (imageContainer) imageContainer.style.display = "flex"; // Make the container visible
@@ -204,5 +197,6 @@
           loadingBar.style.width = '0';
         });
     });
-</script>
-</body
+  </script>
+</body>
+</html>
