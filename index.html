@@ -126,24 +126,29 @@
         loadingBar.style.width = '100%';
 
         // Update the heading text
-        document.querySelector("h1").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
+        const heading = document.querySelector("h1");
+        if (heading) heading.textContent = "Voilà! Your masterpiece is ready to shine 🎉";
 
         // Hide loading text and loading bar
-        document.querySelector(".loading").style.display = "none";
-        document.getElementById("loading-bar-container").style.display = "none";
+        const loadingText = document.querySelector(".loading");
+        if (loadingText) loadingText.style.display = "none";
+
+        const loadingBarContainer = document.getElementById("loading-bar-container");
+        if (loadingBarContainer) loadingBarContainer.style.display = "none";
 
         // Show the image and download link
         const imageContainer = document.getElementById("image-container");
         const image = document.getElementById("generated-image");
         const downloadLink = document.getElementById("download-link");
 
-        image.src = record.image_url; // Set the image source
-        downloadLink.href = record.image_url; // Set the download link
+        if (image) image.src = record.image_url; // Set the image source
+        if (downloadLink) downloadLink.href = record.image_url; // Set the download link
 
-        imageContainer.style.display = "flex"; // Make the container visible
+        if (imageContainer) imageContainer.style.display = "flex"; // Make the container visible
       } else {
         // Handle case where the image is not ready
-        document.querySelector(".loading").textContent = "Image not ready or token invalid.";
+        const loadingText = document.querySelector(".loading");
+        if (loadingText) loadingText.textContent = "Image not ready or token invalid.";
         clearInterval(interval);
         loadingBar.style.width = '0';
       }
@@ -151,7 +156,8 @@
     .catch(error => {
       // Handle errors fetching the data
       console.error("Error fetching data:", error);
-      document.querySelector(".loading").textContent = "An error occurred. Please try again later.";
+      const loadingText = document.querySelector(".loading");
+      if (loadingText) loadingText.textContent = "An error occurred. Please try again later.";
       clearInterval(interval);
       loadingBar.style.width = '0';
     });
