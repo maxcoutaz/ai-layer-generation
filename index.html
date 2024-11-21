@@ -42,7 +42,7 @@
     .loading-bar-container {
       width: 80%;
       height: 10px;
-      background-color: #ffffff;
+      background-color:;
       margin: 20px auto;
       border-radius: 5px;
       overflow: hidden;
@@ -53,16 +53,16 @@
       position: relative;
       width: 0;
       height: 100%;
-      background-color: #0edda5;
-      transition: width 3s linear; /* Smooth bar animation */
+      background-color:;
+      transition: width 10s linear; /* Smooth bar animation */
     }
 
     #rocket {
       position: absolute;
       top: -20px; /* Position rocket above the bar */
       left: 0;
-      font-size: 1.5em; /* Size of the rocket emoji */
-      transition: transform 1s ease-in-out, left 0.5s linear;
+      font-size: 2em; /* Size of the rocket emoji */
+      transition: transform 1s ease-in-out, left 10s linear;
     }
 
     .fly-out {
@@ -71,8 +71,8 @@
     }
 
     a {
-      background-color: ;
-      color: #203d65 0.2;
+      background-color: #ffffff ;
+      color: #203d65;
       padding: 10px 20px;
       border-radius: 12px;
       text-decoration: none;
@@ -82,7 +82,7 @@
     }
 
     a:hover {
-      background-color:;
+      background-color: #ffffff;
     }
   </style>
 </head>
@@ -107,15 +107,28 @@
 
   // Simulate loading bar progress
   const loadingBar = document.getElementById('loading-bar');
-  const rocket = document.getElementById('rocket');
-  const interval = setInterval(() => {
-    if (loadingBar.offsetWidth / loadingBar.parentElement.offsetWidth < 1) {
-      loadingBar.style.width = (loadingBar.offsetWidth + 10) + '%';
-      rocket.style.left = loadingBar.offsetWidth + 'px'; // Move the rocket
-    } else {
-      clearInterval(interval);
-    }
-  }, 500);
+const rocket = document.getElementById('rocket');
+
+// Start loading bar animation
+    loadingBar.style.width = '100%'; // Let the bar animation fill up to 100%
+    setTimeout(() => {
+      rocket.style.left = '100%'; // Move rocket to the end of the bar
+    }, 0); // No delay to start rocket movement
+    
+    // Animate the rocket flying out after the bar fills
+    setTimeout(() => {
+      if (rocket) {
+        rocket.classList.add("fly-out");
+      }
+    }, 10000); // Trigger fly-out after 10 seconds
+    
+    // Wait for the rocket animation to finish, then hide the loading bar
+    setTimeout(() => {
+      const loadingBarContainer = document.getElementById("loading-bar-container");
+      if (loadingBarContainer) {
+        loadingBarContainer.style.display = "none";
+      }
+    }, 11000); // Ensure fly-out finishes before hiding the bar
 
   // Fetch the JSON data from the correct repository
   fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
