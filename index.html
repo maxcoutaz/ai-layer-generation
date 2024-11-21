@@ -31,7 +31,8 @@
     }
 
     #generated-image {
-      max-width: 50%; /* Adjust the size displayed on the webpage */
+      max-width: 90%; /* Smaller image for desktop screens */
+      max-height: 500px; /* Limit height for large images */
       height: auto;
       margin: 0 auto;
     }
@@ -53,19 +54,19 @@
     }
 
     @keyframes loading {
-  0% {
-    left: -100%;
-    width: 100%;
-  }
-  50% {
-    left: 0;
-    width: 100%;
-  }
-  100% {
-    left: 100%;
-    width: 100%;
-  }
-}
+      0% {
+        left: -100%;
+        width: 100%;
+      }
+      50% {
+        left: 0;
+        width: 100%;
+      }
+      100% {
+        left: 100%;
+        width: 100%;
+      }
+    }
 
     a {
       background-color: #ffffff;
@@ -84,13 +85,13 @@
   </style>
 </head>
 <body>
-  <h1>Generating Your Image</h1>
+  <h1>We’re Cooking Your Image! 🍳</h1> <!-- Updated creative text -->
   <div class="loading">Your image is on the way! Hang tight 🚀</div>
   <div class="loading-bar-container">
     <div class="loading-bar" id="loading-bar"></div>
   </div>
   <div id="image-container">
-    <img id="generated-image" style="max-width: 80%; height: auto;" />
+    <img id="generated-image" />
     <br />
     <a id="download-link" href="#" download="generated_image.png">Download Image</a>
   </div>
@@ -120,19 +121,22 @@
           // Stop the loading bar
           clearInterval(interval);
           loadingBar.style.width = '100%';
-
-          // Update text to display when the image is ready
-          document.querySelector(".loading").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
-
-          // Hide loading and show image
+          
+          // Update the h1 text to "Voilà..."
+          document.querySelector("h1").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
+          
+          // Hide loading text and bar
           document.querySelector(".loading").style.display = "none";
+          document.getElementById("loading-bar-container").style.display = "none";
+          
+          // Show image and download link
           const imageContainer = document.getElementById("image-container");
           const image = document.getElementById("generated-image");
           const downloadLink = document.getElementById("download-link");
-
+          
           image.src = record.image_url;
           downloadLink.href = record.image_url;
-
+          
           imageContainer.style.display = "block";
         } else {
           document.querySelector(".loading").textContent = "Image not ready or token invalid.";
