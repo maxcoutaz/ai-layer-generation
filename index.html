@@ -98,62 +98,64 @@
   </div>
 
   <script>
-    // Extract token from URL
-    const token = location.pathname.split('/').pop();
-    
-    // Simulate loading bar progress
-    let progress = 0;
-    const loadingBar = document.getElementById('loading-bar');
-    const interval = setInterval(() => {
-      if (progress < 100) {
-        progress += 10;
-        loadingBar.style.width = progress + '%';
-      } else {
+    document.addEventListener("DOMContentLoaded", function () {
+  // Extract token from URL
+  const token = location.pathname.split('/').pop();
+
+  // Simulate loading bar progress
+  let progress = 0;
+  const loadingBar = document.getElementById('loading-bar');
+  const interval = setInterval(() => {
+    if (progress < 100) {
+      progress += 10;
+      loadingBar.style.width = progress + '%';
+    } else {
+      clearInterval(interval);
+    }
+  }, 500);
+
+  // Fetch the JSON data from the correct repository
+  fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
+    .then(response => response.json())
+    .then(data => {
+      const record = data[`export_${token}`]; // Adjusting to the key structure in data.json
+      console.log(record); // Log to check the fetched data
+      if (record && record.status === "ready") {
+        // Stop the loading bar
         clearInterval(interval);
-      }
-    }, 500);
-    
-    // Fetch the JSON data from the correct repository
-    fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
-      .then(response => response.json())
-      .then(data => {
-        const record = data[`export_${token}`]; // Adjusting to the key structure in data.json
-        console.log(record); // Log to check the fetched data
-        if (record && record.status === "ready") {
-          // Stop the loading bar
-          clearInterval(interval);
-          loadingBar.style.width = '100%';
-    
-          // Update the heading text
-          document.querySelector("h1").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
-    
-          // Hide loading text and loading bar
-          document.querySelector(".loading").style.display = "none";
-          document.getElementById("loading-bar-container").style.display = "none";
-    
-          // Show the image and download link
-          const imageContainer = document.getElementById("image-container");
-          const image = document.getElementById("generated-image");
-          const downloadLink = document.getElementById("download-link");
-    
-          image.src = record.image_url; // Set the image source
-          downloadLink.href = record.image_url; // Set the download link
-    
-          imageContainer.style.display = "flex"; // Make the container visible
-        } else {
-          // Handle case where the image is not ready
-          document.querySelector(".loading").textContent = "Image not ready or token invalid.";
-          clearInterval(interval);
-          loadingBar.style.width = '0';
-        }
-      })
-      .catch(error => {
-        // Handle errors fetching the data
-        console.error("Error fetching data:", error);
-        document.querySelector(".loading").textContent = "An error occurred. Please try again later.";
+        loadingBar.style.width = '100%';
+
+        // Update the heading text
+        document.querySelector("h1").textContent = "Voilà! Your masterpiece is ready to shine 🎉";
+
+        // Hide loading text and loading bar
+        document.querySelector(".loading").style.display = "none";
+        document.getElementById("loading-bar-container").style.display = "none";
+
+        // Show the image and download link
+        const imageContainer = document.getElementById("image-container");
+        const image = document.getElementById("generated-image");
+        const downloadLink = document.getElementById("download-link");
+
+        image.src = record.image_url; // Set the image source
+        downloadLink.href = record.image_url; // Set the download link
+
+        imageContainer.style.display = "flex"; // Make the container visible
+      } else {
+        // Handle case where the image is not ready
+        document.querySelector(".loading").textContent = "Image not ready or token invalid.";
         clearInterval(interval);
         loadingBar.style.width = '0';
-      });
+      }
+    })
+    .catch(error => {
+      // Handle errors fetching the data
+      console.error("Error fetching data:", error);
+      document.querySelector(".loading").textContent = "An error occurred. Please try again later.";
+      clearInterval(interval);
+      loadingBar.style.width = '0';
+    });
+});
   </script>
 </body>
 </html>
