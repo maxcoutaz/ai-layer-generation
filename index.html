@@ -16,7 +16,7 @@
     }
 
     h1 {
-      margin-top: 25%;
+      margin-top: 10%;
       font-size: 2em;
     }
 
@@ -112,111 +112,97 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-  // Extract token from URL
-  const token = location.pathname.split('/').pop();
+      // Extract token from URL
+      const token = location.pathname.split('/').pop();
 
-  // Get references to the bar and rocket
-  const loadingBar = document.getElementById('loading-bar');
-  const rocket = document.getElementById('rocket');
+      // Get references to the bar and rocket
+      const loadingBar = document.getElementById('loading-bar');
+      const rocket = document.getElementById('rocket');
 
-  // Simulate loading bar progress
-  let progress = 0;
-  const interval = setInterval(() => {
-    if (progress < 100) {
-      progress += 1; // Increment progress
-      loadingBar.style.width = `${progress}%`;
-      rocket.style.left = `${progress}%`; // Move the rocket with the bar
-    } else {
-      clearInterval(interval); // Stop the interval when progress is 100%
-    }
-  }, 100); // Update every 100ms for smooth animation
-
-  // Fetch the JSON data from the repository
-  fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      const record = data[`export_${token}`];
-      if (record && record.status === "ready") {
-        // Stop the loading bar
-        clearInterval(interval);
-        loadingBar.style.width = '100%';
-        rocket.style.left = '100%';
-
-        // Animate the rocket flying out
-        setTimeout(() => {
-          if (rocket) {
-            rocket.classList.add("fly-out");
-          }
-        }, 300);
-
-        // Wait for the rocket animation to finish, then hide the loading bar
-        setTimeout(() => {
-          const loadingBarContainer = document.getElementById("loading-bar-container");
-          if (loadingBarContainer) {
-            loadingBarContainer.style.display = "none";
-          }
-        }, 1500);
-
-        // Update the heading text
-        const heading = document.querySelector("h1");
-        if (heading) heading.textContent = "Voilà! Your masterpiece is ready to shine 🎉";
-
-        // Hide the loading text
-        const loadingText = document.querySelector(".loading");
-        if (loadingText) loadingText.style.display = "none";
-
-        // Show the image and download link
-        const imageContainer = document.getElementById("image-container");
-        const image = document.getElementById("generated-image");
-        const downloadLink = document.getElementById("download-link");
-
-        if (image) image.src = record.image_url; // Set the image source
-
-        if (downloadLink) {
-          const filename = `generated_image_${token}.png`; // Create a dynamic filename
-          downloadLink.addEventListener("click", async (event) => {
-            event.preventDefault(); // Prevent default link behavior
-            try {
-              const response = await fetch(record.image_url);
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              const blob = await response.blob(); // Convert the response to a blob
-              const url = URL.createObjectURL(blob); // Create a blob URL
-              const anchor = document.createElement("a"); // Create a temporary anchor
-              anchor.href = url; // Set the href to the blob URL
-              anchor.download = filename; // Set the download filename
-              document.body.appendChild(anchor); // Append the anchor to the DOM
-              anchor.click(); // Trigger the download
-              document.body.removeChild(anchor); // Remove the anchor from the DOM
-              URL.revokeObjectURL(url); // Release the blob URL
-            } catch (error) {
-              console.error("Error downloading the image:", error);
-              alert("Failed to download the image. Please try again later.");
-            }
-          });
+      // Simulate loading bar progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (progress < 100) {
+          progress += 1; // Increment progress
+          loadingBar.style.width = `${progress}%`;
+          rocket.style.left = `${progress}%`; // Move the rocket with the bar
+        } else {
+          clearInterval(interval); // Stop the interval when progress is 100%
         }
+      }, 100); // Update every 100ms for smooth animation
 
-        if (imageContainer) imageContainer.style.display = "flex"; // Make the container visible
-      } else {
-        const loadingText = document.querySelector(".loading");
-        if (loadingText) loadingText.textContent = "Image not ready or token invalid.";
-        clearInterval(interval);
-        loadingBar.style.width = '0';
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching data:", error);
-      const loadingText = document.querySelector(".loading");
-      if (loadingText) loadingText.textContent = "An error occurred. Please try again later.";
-      clearInterval(interval);
-      loadingBar.style.width = '0';
+      // Fetch the JSON data from the repository
+      fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          const record = data[`export_${token}`];
+          if (record && record.status === "ready") {
+            // Stop the loading bar
+            clearInterval(interval);
+            loadingBar.style.width = '100%';
+            rocket.style.left = '100%';
+
+            // Animate the rocket flying out
+            setTimeout(() => {
+              if (rocket) {
+                rocket.classList.add("fly-out");
+              }
+            }, 300);
+
+            // Wait for the rocket animation to finish, then hide the loading bar
+            setTimeout(() => {
+              const loadingBarContainer = document.getElementById("loading-bar-container");
+              if (loadingBarContainer) {
+                loadingBarContainer.style.display = "none";
+              }
+            }, 1500);
+
+            // Update the heading text
+            const heading = document.querySelector("h1");
+            if (heading) heading.textContent = "Voilà! Your masterpiece is ready to shine 🎉";
+
+            // Hide the loading text
+            const loadingText = document.querySelector(".loading");
+            if (loadingText) loadingText.style.display = "none";
+
+            // Show the image and download link
+            const imageContainer = document.getElementById("image-container");
+            const image = document.getElementById("generated-image");
+            const downloadLink = document.getElementById("download-link");
+
+            if (image) image.src = record.image_url; // Set the image source
+
+            if (downloadLink) {
+              const filename = `generated_image_${token}.png`; // Create a dynamic filename
+              downloadLink.addEventListener("click", (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                // Create a direct link for manual saving
+                downloadLink.href = record.image_url;
+                downloadLink.target = "_blank"; // Open the image in a new tab
+                downloadLink.download = filename; // Suggested filename
+              });
+            }
+
+            if (imageContainer) imageContainer.style.display = "flex"; // Make the container visible
+          } else {
+            const loadingText = document.querySelector(".loading");
+            if (loadingText) loadingText.textContent = "Image not ready or token invalid.";
+            clearInterval(interval);
+            loadingBar.style.width = '0';
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+          const loadingText = document.querySelector(".loading");
+          if (loadingText) loadingText.textContent = "An error occurred. Please try again later.";
+          clearInterval(interval);
+          loadingBar.style.width = '0';
+        });
     });
-});
-  </script>
+</script>
 </body
