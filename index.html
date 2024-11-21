@@ -177,8 +177,6 @@
 
             if (image) image.src = record.image_url; // Set the image source
 
-            const downloadLink = document.getElementById("download-link");
-
             if (downloadLink) {
               const filename = `generated_image_${token}.png`; // Create a dynamic filename
               downloadLink.addEventListener("click", (event) => {
