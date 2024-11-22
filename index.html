@@ -107,7 +107,7 @@
 <body>
   <!-- Typeform Embed -->
   <div id="typeform-container">
-    <div id="typeform-embed" data-tf-live="01JD7P8XH0YBKND8QNTKAXSF6V"></div>
+    <div id="typeform-embed"></div>
   </div>
 
   <!-- Cooking Screen -->
@@ -129,36 +129,35 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const typeformContainer = document.getElementById('typeform-container');
-      const processContainer = document.getElementById('process-container');
-      const imageContainer = document.getElementById('image-container');
+      const typeformContainer = document.getElementById("typeform-container");
+      const processContainer = document.getElementById("process-container");
+      const imageContainer = document.getElementById("image-container");
       const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
-      // Retrieve or generate UUID
+      // Get UUID from localStorage
       let uuid = localStorage.getItem("uuid");
-      const hasUuid = !!uuid;
 
-      if (!hasUuid) {
-        // Generate and store UUID
+      if (!uuid) {
+        // No UUID, generate a new one
         uuid = crypto.randomUUID();
         localStorage.setItem("uuid", uuid);
 
-        // Show Typeform and pass UUID dynamically
-        const typeformEmbed = document.getElementById('typeform-embed');
-        typeformEmbed.setAttribute('data-tf-hidden', `uuid=${uuid}`);
+        // Show Typeform and pass UUID as hidden field
+        const typeformEmbed = document.getElementById("typeform-embed");
+        typeformEmbed.setAttribute("data-tf-hidden", `uuid=${uuid}`);
         typeformContainer.style.display = "block";
 
-        // Dynamically load Typeform script
-        const embedScript = document.createElement('script');
+        // Initialize Typeform Embed
+        const embedScript = document.createElement("script");
         embedScript.src = "https://embed.typeform.com/next/embed.js";
         embedScript.onload = () => {
-          const embedInstance = window.typeformEmbed.makeWidget(
+          window.typeformEmbed.makeWidget(
             typeformEmbed,
-            'https://form.typeform.com/to/01JD7P8XH0YBKND8QNTKAXSF6V',
+            "https://form.typeform.com/to/01JD7P8XH0YBKND8QNTKAXSF6V",
             {
               hidden: { uuid },
               onSubmit: () => {
-                // Reload the page to show the "We’re Cooking..." screen
+                // Reload page to bypass Typeform
                 location.reload();
               },
             }
@@ -166,13 +165,13 @@
         };
         document.body.appendChild(embedScript);
       } else {
-        // Skip Typeform and show the "Cooking" screen
+        // UUID exists, bypass Typeform and show cooking screen
         typeformContainer.style.display = "none";
         processContainer.style.display = "block";
 
         // Simulate loading bar
-        const loadingBar = document.getElementById('loading-bar');
-        const rocket = document.getElementById('rocket');
+        const loadingBar = document.getElementById("loading-bar");
+        const rocket = document.getElementById("rocket");
         let progress = 0;
         const interval = setInterval(() => {
           if (progress < 100) {
