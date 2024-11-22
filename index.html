@@ -141,7 +141,6 @@
       // Start the loading bar animation
       function startLoadingBar() {
         let progress = 0;
-
         if (loadingInterval) clearInterval(loadingInterval);
 
         loadingInterval = setInterval(() => {
@@ -154,7 +153,7 @@
             loadingBar.style.width = "0%";
             rocket.style.left = "0%";
           }
-        }, 100); // Smooth animation
+        }, 100);
       }
 
       // Check the status of the UUID
@@ -165,6 +164,7 @@
             const record = data[`export_${uuid}`];
             if (record && record.status === "ready") {
               clearInterval(loadingInterval);
+
               processContainer.style.display = "none";
               typeformContainer.style.display = "none";
               imageContainer.style.display = "flex";
@@ -176,6 +176,7 @@
             } else {
               typeformContainer.style.display = "none";
               processContainer.style.display = "block";
+
               startLoadingBar();
               setTimeout(checkStatus, 10000);
             }
@@ -183,7 +184,6 @@
           .catch(console.error);
       }
 
-      // Generate or retrieve UUID
       let uuid = localStorage.getItem("uuid");
       if (!uuid) {
         uuid = crypto.randomUUID();
@@ -193,20 +193,18 @@
         checkStatus();
       }
 
-      // Attach UUID to Typeform hidden field
       typeformEmbed.setAttribute("data-tf-hidden", `uuid=${uuid}`);
       console.log("UUID added to Typeform:", uuid);
 
-      // Handle Typeform submission
       window.addEventListener("message", function (event) {
         if (event.data?.type === "form-submit") {
+          console.log("Form submission detected.");
           typeformContainer.style.display = "none";
           processContainer.style.display = "block";
           checkStatus();
         }
       });
 
-      // Handle "Generate a New One" button
       newImageButton.addEventListener("click", () => {
         localStorage.removeItem("uuid");
         window.location.reload();
