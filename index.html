@@ -5,104 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Image</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Oswald', sans-serif;
-      background-color: #203d65;
-      color: #fff;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      margin-top: 10%;
-      font-size: 2em;
-    }
-
-    .loading {
-      font-size: 1.2em;
-      margin-top: 20px;
-    }
-
-    #typeform-container {
-      display: none;
-    }
-
-    #process-container {
-      display: none;
-    }
-
-    #image-container {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #generated-image {
-      max-width: 50%;
-      max-height: 500px;
-      height: auto;
-      margin: 0 auto;
-    }
-
-    @media (max-width: 768px) {
-      #generated-image {
-        max-width: 80%;
-        margin-left: 15%;
-        margin-right: 15%;
-      }
-
-      body {
-        padding: 0 5%;
-      }
-    }
-
-    .loading-bar-container {
-      width: 80%;
-      height: 10px;
-      margin: 20px auto;
-      border-radius: 5px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .loading-bar {
-      width: 0;
-      height: 100%;
-      background-color: #0edda5;
-      transition: width 10s linear;
-    }
-
-    #rocket {
-      position: absolute;
-      top: -20px;
-      left: 0;
-      font-size: 5em;
-      transition: transform 1s ease-in-out, left 10s linear;
-    }
-
-    .fly-out {
-      transform: translateY(-150px) scale(1.5);
-      opacity: 0;
-    }
-
-    a {
-      background-color: #ffffff;
-      color: #203d65;
-      padding: 10px 20px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-size: 1.2em;
-      display: inline-block;
-      margin: 20px auto;
-      text-align: center;
-    }
-
-    a:hover {
-      background-color: #e6e6e6;
-    }
-  </style>
 </head>
 <body>
   <!-- Typeform Embed -->
@@ -111,93 +13,28 @@
     <script src="https://embed.typeform.com/next/embed.js"></script>
   </div>
 
-  <!-- Cooking Screen -->
-  <div id="process-container">
-    <h1>We’re Cooking Your Image! 🍳</h1>
-    <div class="loading">Your image is on the way! Hang tight 🚀</div>
-    <div class="loading-bar-container" id="loading-bar-container">
-      <div class="loading-bar" id="loading-bar"></div>
-      <div id="rocket">🚀</div>
-    </div>
-  </div>
-
-  <!-- Generated Image Display -->
-  <div id="image-container">
-    <img id="generated-image" />
-    <br />
-    <a id="download-link" href="#" target="_blank">View Full Image</a>
-  </div>
-
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const typeformContainer = document.getElementById("typeform-container");
-      const processContainer = document.getElementById("process-container");
-      const imageContainer = document.getElementById("image-container");
       const typeformEmbed = document.querySelector('[data-tf-live]');
-      const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
-      // Get UUID from localStorage
+      // Generate or retrieve UUID
       let uuid = localStorage.getItem("uuid");
-
       if (!uuid) {
-        // No UUID, generate a new one
         uuid = crypto.randomUUID();
         localStorage.setItem("uuid", uuid);
-
-        // Pass UUID as a hidden field to Typeform
-        typeformEmbed.setAttribute("data-tf-hidden", `uuid=${uuid}`);
-        typeformContainer.style.display = "block";
-
-        // Listen for Typeform submission event
-        window.addEventListener("message", function (event) {
-          if (event.data?.type === "formSubmit") {
-            // Hide Typeform and reload the page
-            typeformContainer.style.display = "none";
-            location.reload();
-          }
-        });
+        console.log("Generated new UUID:", uuid);
       } else {
-        // UUID exists, bypass Typeform and show cooking screen
-        typeformContainer.style.display = "none";
-        processContainer.style.display = "block";
-
-        // Simulate loading bar
-        const loadingBar = document.getElementById("loading-bar");
-        const rocket = document.getElementById("rocket");
-        let progress = 0;
-        const interval = setInterval(() => {
-          if (progress < 100) {
-            progress += 1;
-            loadingBar.style.width = `${progress}%`;
-            rocket.style.left = `${progress}%`;
-          } else {
-            clearInterval(interval);
-          }
-        }, 100);
-
-        // Poll for image data
-        const fetchInterval = setInterval(() => {
-          fetch(jsonUrl)
-            .then((response) => response.json())
-            .then((data) => {
-              const record = data[`export_${uuid}`];
-              if (record && record.status === "ready") {
-                clearInterval(fetchInterval);
-
-                // Stop animation and show image
-                clearInterval(interval);
-                processContainer.style.display = "none";
-                imageContainer.style.display = "flex";
-
-                const image = document.getElementById("generated-image");
-                const downloadLink = document.getElementById("download-link");
-                image.src = record.image_url;
-                downloadLink.href = record.image_url;
-              }
-            })
-            .catch(console.error);
-        }, 3000);
+        console.log("Using existing UUID:", uuid);
       }
+
+      // Add UUID as hidden field
+      typeformEmbed.setAttribute("data-tf-hidden", `uuid=${uuid}`);
+      console.log("Updated data-tf-hidden:", typeformEmbed.getAttribute("data-tf-hidden"));
+
+      // Display the Typeform
+      typeformContainer.style.display = "block";
+      console.log("Displaying Typeform...");
     });
   </script>
 </body>
