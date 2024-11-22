@@ -25,28 +25,36 @@
       margin-top: 20px;
     }
 
+    #typeform-container {
+      display: none;
+    }
+
+    #process-container {
+      display: none;
+    }
+
     #image-container {
       display: none;
       flex-direction: column;
-      align-items: center; /* Center everything inside the container */
+      align-items: center;
     }
 
     #generated-image {
-      max-width: 50%; /* Default for desktop */
-      max-height: 500px; /* Limit height for large images */
+      max-width: 50%;
+      max-height: 500px;
       height: auto;
       margin: 0 auto;
     }
 
-    @media (max-width: 768px) { /* For devices with a max width of 768px (tablets and smaller) */
+    @media (max-width: 768px) {
       #generated-image {
-        max-width: 80%; /* Increase size for mobile */
-        margin-left: 15%; /* Add more left and right margin */
+        max-width: 80%;
+        margin-left: 15%;
         margin-right: 15%;
       }
 
       body {
-        padding: 0 5%; /* Increase body padding on mobile for a better layout */
+        padding: 0 5%;
       }
     }
 
@@ -63,20 +71,20 @@
       width: 0;
       height: 100%;
       background-color: #0edda5;
-      transition: width 10s linear; /* Slow animation over 10 seconds */
+      transition: width 10s linear;
     }
 
     #rocket {
       position: absolute;
-      top: -20px; /* Position rocket above the bar */
+      top: -20px;
       left: 0;
-      font-size: 5em; /* Size of the rocket emoji */
-      transition: transform 1s ease-in-out, left 10s linear; /* Smooth movement */
+      font-size: 5em;
+      transition: transform 1s ease-in-out, left 10s linear;
     }
 
     .fly-out {
-      transform: translateY(-150px) scale(1.5); /* Rocket flies upward and grows */
-      opacity: 0; /* Rocket fades out */
+      transform: translateY(-150px) scale(1.5);
+      opacity: 0;
     }
 
     a {
@@ -87,7 +95,7 @@
       text-decoration: none;
       font-size: 1.2em;
       display: inline-block;
-      margin: 20px auto; /* Ensure proper spacing */
+      margin: 20px auto;
       text-align: center;
     }
 
@@ -97,12 +105,22 @@
   </style>
 </head>
 <body>
-  <h1>We’re Cooking Your Image! 🍳</h1>
-  <div class="loading">Your image is on the way! Hang tight 🚀</div>
-  <div class="loading-bar-container" id="loading-bar-container">
-    <div class="loading-bar" id="loading-bar"></div>
-    <div id="rocket">🚀</div>
+  <!-- Typeform Embed -->
+  <div id="typeform-container">
+    <div id="typeform-embed" data-tf-live="01HCZ4DNW8JM6PEGNTQWF2PW87"></div>
   </div>
+
+  <!-- Cooking Screen -->
+  <div id="process-container">
+    <h1>We’re Cooking Your Image! 🍳</h1>
+    <div class="loading">Your image is on the way! Hang tight 🚀</div>
+    <div class="loading-bar-container" id="loading-bar-container">
+      <div class="loading-bar" id="loading-bar"></div>
+      <div id="rocket">🚀</div>
+    </div>
+  </div>
+
+  <!-- Generated Image Display -->
   <div id="image-container">
     <img id="generated-image" />
     <br />
@@ -111,99 +129,51 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Extract token from URL
-      const token = location.pathname.split('/').pop();
+      const params = new URLSearchParams(window.location.search);
+      const pathUuid = location.pathname.split('/').pop();
+      const typeformEmbed = document.getElementById('typeform-embed');
+      const typeformContainer = document.getElementById('typeform-container');
+      const processContainer = document.getElementById('process-container');
+      const imageContainer = document.getElementById('image-container');
+      const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
-      // Check if token is present in the URL
-      if (!token || token === "") {
-        document.querySelector("h1").textContent = "Welcome! Submit a form to generate your image.";
-        document.querySelector(".loading").style.display = "none";
-        document.getElementById("loading-bar-container").style.display = "none";
-        return;
-      }
+      // Display the Typeform if on the main URL
+      if (pathUuid === "" || pathUuid === "/") {
+        const uuid = crypto.randomUUID();
+        typeformEmbed.setAttribute('data-tf-hidden', `uuid=${uuid}`);
+        console.log("Generated UUID:", uuid);
 
-      // Get references to the bar and rocket
-      const loadingBar = document.getElementById('loading-bar');
-      const rocket = document.getElementById('rocket');
+        typeformContainer.style.display = "block";
+        const embedScript = document.createElement('script');
+        embedScript.src = "https://embed.typeform.com/next/embed.js";
+        document.body.appendChild(embedScript);
+      } else {
+        // Remove the Typeform and show the "Cooking" screen
+        typeformContainer.style.display = "none";
+        processContainer.style.display = "block";
 
-      // Simulate loading bar progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        if (progress < 100) {
-          progress += 1; // Increment progress
-          loadingBar.style.width = `${progress}%`;
-          rocket.style.left = `${progress}%`; // Move the rocket with the bar
-        } else {
-          clearInterval(interval); // Stop the interval when progress is 100%
-        }
-      }, 100); // Update every 100ms for smooth animation
-
-      // Fetch the JSON data from the repository
-      fetch("https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json")
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const record = data[`export_${token}`];
-          if (record && record.status === "ready") {
-            // Stop the loading bar
-            clearInterval(interval);
-            loadingBar.style.width = '100%';
-            rocket.style.left = '100%';
-
-            // Animate the rocket flying out
-            setTimeout(() => {
-              if (rocket) {
-                rocket.classList.add("fly-out");
-              }
-            }, 300);
-
-            // Wait for the rocket animation to finish, then hide the loading bar
-            setTimeout(() => {
-              const loadingBarContainer = document.getElementById("loading-bar-container");
-              if (loadingBarContainer) {
-                loadingBarContainer.style.display = "none";
-              }
-            }, 1500);
-
-            // Update the heading text
-            const heading = document.querySelector("h1");
-            if (heading) heading.textContent = "Voilà! Your masterpiece is ready 🎉";
-
-            // Hide the loading text
-            const loadingText = document.querySelector(".loading");
-            if (loadingText) loadingText.style.display = "none";
-
-            // Show the image and download link
-            const imageContainer = document.getElementById("image-container");
-            const image = document.getElementById("generated-image");
-            const downloadLink = document.getElementById("download-link");
-
-            if (image) image.src = record.image_url; // Set the image source
-            if (downloadLink) {
-              downloadLink.href = record.image_url; // Directly link to the full-sized image
-              downloadLink.target = "_blank"; // Open in a new tab
-            }
-
-            if (imageContainer) imageContainer.style.display = "flex"; // Make the container visible
+        // Loading bar and rocket animation
+        const loadingBar = document.getElementById('loading-bar');
+        const rocket = document.getElementById('rocket');
+        let progress = 0;
+        const interval = setInterval(() => {
+          if (progress < 100) {
+            progress += 1;
+            loadingBar.style.width = `${progress}%`;
+            rocket.style.left = `${progress}%`;
           } else {
-            const loadingText = document.querySelector(".loading");
-            if (loadingText) loadingText.textContent = "Image not ready or token invalid.";
             clearInterval(interval);
-            loadingBar.style.width = '0';
           }
-        })
-        .catch(error => {
-          console.error("Error fetching data:", error);
-          const loadingText = document.querySelector(".loading");
-          if (loadingText) loadingText.textContent = "An error occurred. Please try again later.";
-          clearInterval(interval);
-          loadingBar.style.width = '0';
-        });
-    });
-  </script>
-</body>
-</html>
+        }, 100);
+
+        // Poll the JSON data for the generated image
+        const fetchInterval = setInterval(() => {
+          fetch(jsonUrl)
+            .then((response) => response.json())
+            .then((data) => {
+              const record = data[`export_${pathUuid}`];
+              if (record && record.status === "ready") {
+                clearInterval(fetchInterval);
+
+                // Stop animation and show image
+                clearInterval(interval);
