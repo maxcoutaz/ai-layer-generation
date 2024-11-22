@@ -151,9 +151,22 @@
         // Dynamically load Typeform script
         const embedScript = document.createElement('script');
         embedScript.src = "https://embed.typeform.com/next/embed.js";
+        embedScript.onload = () => {
+          const embedInstance = window.typeformEmbed.makeWidget(
+            typeformEmbed,
+            'https://form.typeform.com/to/01JD7P8XH0YBKND8QNTKAXSF6V',
+            {
+              hidden: { uuid },
+              onSubmit: () => {
+                // Reload the page to show the "We’re Cooking..." screen
+                location.reload();
+              },
+            }
+          );
+        };
         document.body.appendChild(embedScript);
       } else {
-        // Reload the page with UUID set, skip Typeform
+        // Skip Typeform and show the "Cooking" screen
         typeformContainer.style.display = "none";
         processContainer.style.display = "block";
 
@@ -193,13 +206,6 @@
             })
             .catch(console.error);
         }, 3000);
-      }
-    });
-
-    // JavaScript to close the form on End Screen
-    window.addEventListener("message", function (event) {
-      if (event.data?.type === "formSubmit") {
-        location.reload();
       }
     });
   </script>
