@@ -129,16 +129,31 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const uuid = urlParams.get("uuid");
-
       const typeformContainer = document.getElementById('typeform-container');
       const processContainer = document.getElementById('process-container');
       const imageContainer = document.getElementById('image-container');
       const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
-      // If UUID exists, show the "Cooking" screen
-      if (uuid) {
+      // Retrieve or generate UUID
+      let uuid = localStorage.getItem("uuid");
+      const hasUuid = !!uuid;
+
+      if (!hasUuid) {
+        // Generate and store UUID
+        uuid = crypto.randomUUID();
+        localStorage.setItem("uuid", uuid);
+
+        // Show Typeform and pass UUID dynamically
+        const typeformEmbed = document.getElementById('typeform-embed');
+        typeformEmbed.setAttribute('data-tf-hidden', `uuid=${uuid}`);
+        typeformContainer.style.display = "block";
+
+        // Dynamically load Typeform script
+        const embedScript = document.createElement('script');
+        embedScript.src = "https://embed.typeform.com/next/embed.js";
+        document.body.appendChild(embedScript);
+      } else {
+        // Reload the page with UUID set, skip Typeform
         typeformContainer.style.display = "none";
         processContainer.style.display = "block";
 
@@ -156,7 +171,7 @@
           }
         }, 100);
 
-        // Poll the JSON file for the generated image
+        // Poll for image data
         const fetchInterval = setInterval(() => {
           fetch(jsonUrl)
             .then((response) => response.json())
@@ -178,14 +193,13 @@
             })
             .catch(console.error);
         }, 3000);
-      } else {
-        // If no UUID, show Typeform
-        typeformContainer.style.display = "block";
+      }
+    });
 
-        // Dynamically load the embed script
-        const embedScript = document.createElement('script');
-        embedScript.src = "https://embed.typeform.com/next/embed.js";
-        document.body.appendChild(embedScript);
+    // JavaScript to close the form on End Screen
+    window.addEventListener("message", function (event) {
+      if (event.data?.type === "formSubmit") {
+        location.reload();
       }
     });
   </script>
