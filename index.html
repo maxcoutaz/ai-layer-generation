@@ -129,30 +129,20 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const params = new URLSearchParams(window.location.search);
-      const pathUuid = location.pathname.split('/').pop();
-      const typeformEmbed = document.getElementById('typeform-embed');
+      const urlParams = new URLSearchParams(window.location.search);
+      const uuid = urlParams.get("uuid");
+
       const typeformContainer = document.getElementById('typeform-container');
       const processContainer = document.getElementById('process-container');
       const imageContainer = document.getElementById('image-container');
       const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
-      // Display the Typeform if on the main URL
-      if (pathUuid === "" || pathUuid === "/") {
-        const uuid = crypto.randomUUID();
-        typeformEmbed.setAttribute('data-tf-hidden', `uuid=${uuid}`);
-        console.log("Generated UUID:", uuid);
-
-        typeformContainer.style.display = "block";
-        const embedScript = document.createElement('script');
-        embedScript.src = "https://embed.typeform.com/next/embed.js";
-        document.body.appendChild(embedScript);
-      } else {
-        // Remove the Typeform and show the "Cooking" screen
+      // If UUID exists, show the "Cooking" screen
+      if (uuid) {
         typeformContainer.style.display = "none";
         processContainer.style.display = "block";
 
-        // Loading bar and rocket animation
+        // Simulate loading bar
         const loadingBar = document.getElementById('loading-bar');
         const rocket = document.getElementById('rocket');
         let progress = 0;
@@ -166,12 +156,12 @@
           }
         }, 100);
 
-        // Poll the JSON data for the generated image
+        // Poll the JSON file for the generated image
         const fetchInterval = setInterval(() => {
           fetch(jsonUrl)
             .then((response) => response.json())
             .then((data) => {
-              const record = data[`export_${pathUuid}`];
+              const record = data[`export_${uuid}`];
               if (record && record.status === "ready") {
                 clearInterval(fetchInterval);
 
@@ -188,6 +178,14 @@
             })
             .catch(console.error);
         }, 3000);
+      } else {
+        // If no UUID, show Typeform
+        typeformContainer.style.display = "block";
+
+        // Dynamically load the embed script
+        const embedScript = document.createElement('script');
+        embedScript.src = "https://embed.typeform.com/next/embed.js";
+        document.body.appendChild(embedScript);
       }
     });
   </script>
