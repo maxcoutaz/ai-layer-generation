@@ -177,3 +177,19 @@
 
                 // Stop animation and show image
                 clearInterval(interval);
+                processContainer.style.display = "none";
+                imageContainer.style.display = "flex";
+
+                const image = document.getElementById("generated-image");
+                const downloadLink = document.getElementById("download-link");
+                image.src = record.image_url;
+                downloadLink.href = record.image_url;
+              }
+            })
+            .catch(console.error);
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
