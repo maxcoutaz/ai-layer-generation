@@ -107,7 +107,8 @@
 <body>
   <!-- Typeform Embed -->
   <div id="typeform-container">
-    <div id="typeform-embed"></div>
+    <div data-tf-live="01JD7P8XH0YBKND8QNTKAXSF6V" data-tf-hidden=""></div>
+    <script src="https://embed.typeform.com/next/embed.js"></script>
   </div>
 
   <!-- Cooking Screen -->
@@ -132,6 +133,7 @@
       const typeformContainer = document.getElementById("typeform-container");
       const processContainer = document.getElementById("process-container");
       const imageContainer = document.getElementById("image-container");
+      const typeformEmbed = document.querySelector('[data-tf-live]');
       const jsonUrl = "https://raw.githubusercontent.com/maxcoutaz/ai-layer-generation/main/data.json";
 
       // Get UUID from localStorage
@@ -142,28 +144,18 @@
         uuid = crypto.randomUUID();
         localStorage.setItem("uuid", uuid);
 
-        // Show Typeform and pass UUID as hidden field
-        const typeformEmbed = document.getElementById("typeform-embed");
+        // Pass UUID as a hidden field to Typeform
         typeformEmbed.setAttribute("data-tf-hidden", `uuid=${uuid}`);
         typeformContainer.style.display = "block";
 
-        // Initialize Typeform Embed
-        const embedScript = document.createElement("script");
-        embedScript.src = "https://embed.typeform.com/next/embed.js";
-        embedScript.onload = () => {
-          window.typeformEmbed.makeWidget(
-            typeformEmbed,
-            "https://form.typeform.com/to/01JD7P8XH0YBKND8QNTKAXSF6V",
-            {
-              hidden: { uuid },
-              onSubmit: () => {
-                // Reload page to bypass Typeform
-                location.reload();
-              },
-            }
-          );
-        };
-        document.body.appendChild(embedScript);
+        // Listen for Typeform submission event
+        window.addEventListener("message", function (event) {
+          if (event.data?.type === "formSubmit") {
+            // Hide Typeform and reload the page
+            typeformContainer.style.display = "none";
+            location.reload();
+          }
+        });
       } else {
         // UUID exists, bypass Typeform and show cooking screen
         typeformContainer.style.display = "none";
