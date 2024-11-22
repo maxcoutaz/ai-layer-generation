@@ -70,7 +70,7 @@
     .loading-bar {
       width: 0;
       height: 100%;
-      transition: width 0.1s linear; /* Syncs with JavaScript */
+      transition: width 0.1s linear;
     }
 
     #rocket {
@@ -78,7 +78,7 @@
       top: -20px;
       left: 0;
       font-size: 4em;
-      transition: left 0.1s linear; /* Syncs with JavaScript */
+      transition: left 0.1s linear;
     }
 
     a, button {
@@ -136,28 +136,25 @@
       const loadingBar = document.getElementById("loading-bar");
       const rocket = document.getElementById("rocket");
       const newImageButton = document.getElementById("new-image");
-      let loadingInterval; // Declare loading interval variable
+      let loadingInterval;
 
       // Start the loading bar animation
       function startLoadingBar() {
         let progress = 0;
 
-        // Clear any existing interval to prevent overlap
         if (loadingInterval) clearInterval(loadingInterval);
 
-        // Start the loading animation
         loadingInterval = setInterval(() => {
           if (progress < 100) {
-            progress += 1; // Increment progress
+            progress += 1;
             loadingBar.style.width = `${progress}%`;
             rocket.style.left = `${progress}%`;
           } else {
-            // Reset progress immediately after reaching 100%
             progress = 0;
             loadingBar.style.width = "0%";
             rocket.style.left = "0%";
           }
-        }, 100); // Update every 100ms for smooth animation
+        }, 100); // Smooth animation
       }
 
       // Check the status of the UUID
@@ -167,10 +164,7 @@
           .then((data) => {
             const record = data[`export_${uuid}`];
             if (record && record.status === "ready") {
-              // Stop the loading bar animation
               clearInterval(loadingInterval);
-
-              // Show the image
               processContainer.style.display = "none";
               typeformContainer.style.display = "none";
               imageContainer.style.display = "flex";
@@ -180,13 +174,10 @@
               image.src = record.image_url;
               downloadLink.href = record.image_url;
             } else {
-              // Show cooking screen if image is not ready
               typeformContainer.style.display = "none";
               processContainer.style.display = "block";
-
-              // Restart the loading bar
               startLoadingBar();
-              setTimeout(checkStatus, 10000); // Poll again after 10 seconds
+              setTimeout(checkStatus, 10000);
             }
           })
           .catch(console.error);
@@ -197,9 +188,9 @@
       if (!uuid) {
         uuid = crypto.randomUUID();
         localStorage.setItem("uuid", uuid);
-        typeformContainer.style.display = "block"; // First load, show Typeform
+        typeformContainer.style.display = "block";
       } else {
-        checkStatus(); // If UUID exists, check its status
+        checkStatus();
       }
 
       // Attach UUID to Typeform hidden field
@@ -209,7 +200,6 @@
       // Handle Typeform submission
       window.addEventListener("message", function (event) {
         if (event.data?.type === "form-submit") {
-          console.log("Form submission detected. Transitioning to cooking screen.");
           typeformContainer.style.display = "none";
           processContainer.style.display = "block";
           checkStatus();
